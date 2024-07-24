@@ -1,6 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { Training, TrainingStatus } from "../../utils/classes/Training";
 import config from "../../../config";
+import moment from "moment";
+import { IoIosPeople } from "react-icons/io";
+import { GrLocation } from "react-icons/gr";
+import { FaArrowRight } from "react-icons/fa";
+import { FiCalendar } from "react-icons/fi";
 
 interface TrainingCardProps {
     className?: string;
@@ -24,15 +29,30 @@ export default function TrainingCard(props: TrainingCardProps) {
                 </div>
                 <div className="px-3 pb-3">
                     <h1 className="font-semibold mb-4">{props.training.subject}</h1>
-                    <div className="grid grid-cols-1 text-sm">
+                    <div className="grid grid-cols-1 gap-y-1 text-black/70 text-sm">
                         {/* Vacancy */}
-                        <p className="col-span-1">40/{props.training["Volunteer_Training_Details.Vacancy"]}</p>
-                        <p className="col-span-1">16:00 - 17:00</p>
-                        <p className="col-span-1">Octopus8</p>
+                        <div className="flex items-center">
+                            <IoIosPeople className="text-secondary mr-3" />
+                            <span>0 / {props.training["Volunteer_Training_Details.Vacancy"]}</span>
+                        </div>
+                        {/* Date and Time */}
+                        <div className="flex items-center">
+                            <FiCalendar className="text-secondary mr-3" />
+                            {moment(new Date(props.training.activity_date_time!).getTime() + (props.training.duration! * 60 * 1000)).format("h:mma")}
+                        </div>
+                        {/* Location */}
+                        <div className="flex items-center">
+                            <GrLocation className="text-secondary mr-3" />
+                            <span>{props.training.location}</span>
+                        </div>
                     </div>
                 </div>
-                <div className="w-full items-center text-center hover:bg-gray-100 font-semibold text-sm cursor-pointer" onClick={() => navigate(`/trainings/${props.training.id}`)}>
-                    View More
+                {/* Button */}
+                <div className="flex w-full justify-center hover:bg-gray-100 font-semibold text-sm cursor-pointer py-2" onClick={() => navigate(`/trainings/${props.training.id}`)}>
+                    <div className="flex">
+                        <span className="mr-3">View More</span>
+                        <FaArrowRight className="text-secondary" />
+                    </div>
                 </div>
             </div>
         </div>
