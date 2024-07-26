@@ -4,9 +4,9 @@ export enum TrainingStatus {
 }
 
 interface MandatoryCustomTrainingProps {
-    "Volunteer_Training_Details.Vacancy": number | null;
     "Volunteer_Training_Details.Thumbnail": number | null;
     "Volunteer_Training_Details.Expiration_Date": string | null;
+    "Volunteer_Training_Details.Validity_Period" : number | null;
     [key: string]: any;
 }
 
@@ -31,9 +31,9 @@ export class Training implements TrainingProps {
     public thumbnail: string | null = null;
     public "status_id:name": TrainingStatus | null = null;
 
-    public "Volunteer_Training_Details.Vacancy": number | null = null;
     public "Volunteer_Training_Details.Thumbnail": number | null = null;
     public "Volunteer_Training_Details.Expiration_Date": string | null = null;
+    public "Volunteer_Training_Details.Validity_Period": number | null = null;
     [key: string]: any;
 
     constructor(props: Partial<TrainingProps>) {

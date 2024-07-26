@@ -35,7 +35,7 @@ export default function Event() {
             <h1 className="font-semibold text-lg text-gray-600">Event Details</h1>
             <div className="bg-white rounded-md mt-4 py-6 px-4 max-w-[1400px]">
                 {/* Image */}
-                <div className="mb-8 h-[200px] rounded-lg relative bg-gray-200">
+                <div className="mb-8 h-[200px] rounded-lg relative border border-gray-50 bg-gray-200">
                     {eventRole.event.thumbnail ?
                         <img src={`${config.domain}/wp-content/uploads/civicrm/custom/${eventRole.event.thumbnail}`} className="w-full h-full object-cover rounded-lg" /> :
                         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">

@@ -2,7 +2,7 @@ import { Contact } from "../classes/Contact";
 import CRM from "../crm";
 
 const ContactManager = new class ContactManager {
-    private entity: string = "contact";
+    private entity: string = "Contact";
 
     async fetch(email: string): Promise<Contact> {
         const response = await CRM(this.entity, "get", {

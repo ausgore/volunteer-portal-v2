@@ -7,7 +7,7 @@ import config from "../../../config";
 import ContactManager from "../../utils/managers/ContactManager";
 import { createSearchParams, useSearchParams } from "react-router-dom";
 import Loading from "../components/Loading";
-import EventRoleCard from "../components/EventRoleCard";
+import EventRoleCard from "../components/Card/EventRoleCard";
 import DropdownButton from "../components/DropdownButton";
 import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
