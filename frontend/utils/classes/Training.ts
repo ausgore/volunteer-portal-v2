@@ -1,3 +1,6 @@
+import { TrainingSchedules, TrainingSchedulesProps } from "./TrainingSchedules";
+import CRM from "../crm";
+
 export enum TrainingStatus {
     Scheduled = "Scheduled",
     Cancelled = "Cancelled"
@@ -6,7 +9,7 @@ export enum TrainingStatus {
 interface MandatoryCustomTrainingProps {
     "Volunteer_Training_Details.Thumbnail": number | null;
     "Volunteer_Training_Details.Expiration_Date": string | null;
-    "Volunteer_Training_Details.Validity_Period" : number | null;
+    "Volunteer_Training_Details.Validity_Period": number | null;
     [key: string]: any;
 }
 
@@ -41,5 +44,25 @@ export class Training implements TrainingProps {
             if (key.startsWith("thumbnail")) this.thumbnail = props[key];
             else this[key as keyof Training] = props[key];
         }
+    }
+
+    async fetchSchedules(trainingId: number) {
+        const response = await CRM("Activity", "get", {
+            select: [
+                'activity_date_time',
+                'status_id:name',
+                'Volunteer_Training_Schedule_Details.Vacancy',
+                'Volunteer_Training_Schedule_Details.Registration_Start_Date',
+                'Volunteer_Training_Schedule_Details.Registration_End_Date',
+                'Volunteer_Training_Schedule_Details.Expiration_Date',
+            ],
+            where: [
+                ['activity_type_id:name', '=', 'Volunteer Training Schedule'],
+                ['Volunteer_Training_Schedule_Details.Training', '=', trainingId],
+            ],
+            // limit?
+        });
+
+        return response?.data.map((ts: TrainingSchedulesProps) => new TrainingSchedules(ts));
     }
 }
