@@ -8,6 +8,7 @@ export interface FetchOptions {
     search?: string | null;
     startDate?: string | null;
     endDate?: string | null;
+    grouped?: boolean;
     limit?: number;
     page?: number;
     [key: string]: any;
@@ -66,7 +67,8 @@ const EventRoleManager = new class EventRoleManager {
                 ["File AS thumbnail", "LEFT", ["thumbnail.id", "=", "event.Volunteer_Event_Details.Thumbnail"]]
             ],
             limit: options?.limit,
-            offset: options?.page && options?.limit ? (options?.page - 1) * options?.limit : 0
+            offset: options?.page && options?.limit ? (options?.page - 1) * options?.limit : 0,
+            group: options?.grouped ? ["Volunteer_Event_Role_Details.Event", "Volunteer_Event_Role_Details.Role"] : []
         });
 
         if (options?.id) return new EventRole(response!.data[0]);

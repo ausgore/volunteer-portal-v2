@@ -27,7 +27,7 @@ export default function Card(props: CardProps) {
                 <div className="mb-4 h-[160px] rounded-lg relative bg-gray-200 cursor-pointer" onClick={() => navigate(props.url)}>
                     {props.thumbnail && <img src={`${config.domain}/wp-content/uploads/civicrm/custom/${props.thumbnail}`} className="w-full h-full object-cover rounded-lg" />}
                     {!props.thumbnail && <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                        <CiFileOff className="text-80px text-gray-500" />
+                        <CiFileOff size={64} className="text-80px text-gray-500" />
                     </div>}
                 </div>
                 {/* Children */}

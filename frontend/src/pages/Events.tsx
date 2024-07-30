@@ -12,7 +12,7 @@ import DropdownButton from "../components/DropdownButton";
 import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-const limit = 9;
+const limit = 1;
 export default function Events() {
     const [eventRoles, setEventRoles] = useState<EventRole[] | null>(null);
     const [totalPages, setTotalPages] = useState(1);
@@ -91,7 +91,8 @@ export default function Events() {
             search: searchParams.get("search"),
             startDate: searchParams.get("startDate"),
             endDate: searchParams.get("endDate"),
-            select: ["id"]
+            select: ["id"],
+            grouped: true,
         })).length;
 
         // Get the total number of pages based on the total documents / limit
@@ -110,6 +111,7 @@ export default function Events() {
             startDate: searchParams.get("startDate"),
             endDate: searchParams.get("endDate"),
             page, limit,
+            grouped: true
         });
 
         setEventRoles(eventRoles as EventRole[]);
