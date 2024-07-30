@@ -6,9 +6,11 @@ import TrainingManager from "../../utils/managers/TrainingManager";
 import Loading from "../components/Loading";
 import config from "../../../config";
 import { CiFileOff } from "react-icons/ci";
+import { useNavigate } from "react-router-dom";
 
 export default function TrainingPage() {
     const { id } = useParams();
+    const navigate = useNavigate();
     const [training, setTraining] = useState<Training>();
     useEffect(() => {
         (async () => {

@@ -18,7 +18,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 				<Route path="/events" element={<Events />} />
 				<Route path="/events/:id" element={<Event />} />
 				<Route path="/trainings" element={<Trainings />} />
-				<Route path="/trainings/:id" element={<Training />} /> 
+				<Route path="/trainings/:id" element={<Training />} />
 			</Routes>
 		</HashRouter>
 	</React.StrictMode>
