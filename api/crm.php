@@ -22,6 +22,7 @@ $join = $query['join'] ?? array();
 $where = $query['where'] ?? array();
 $order = $query['order'] ?? array();
 $values = $query['values'] ?? array();
+$group = $query['group'] ?? array();
 $limit = $query['limit'] ?? null;
 $offset = $query['offset'] ?? null;
 
@@ -35,7 +36,8 @@ if (is_array($select) && !empty($select))
     $params['select'] = $select;
 if (is_array($join) && !empty($join))
     $params['join'] = $join;
-if (is_array($where) && !empty($where)) $params['where'] = $where;
+if (is_array($where) && !empty($where)) 
+    $params['where'] = $where;
 if (is_array($order) && !empty($order)) {
     $orderBy = array();
     // $order = [[id, ASC], [createdAt, ASC]]
@@ -51,6 +53,8 @@ if (is_array($values) && !empty($values)) {
     }
     $params['values'] = $valuesArray;
 }
+if (is_array($group) && !empty($group))
+    $params['groupBy'] = $group;
 if ($limit != null) {
     $params['limit'] = $limit;
 }

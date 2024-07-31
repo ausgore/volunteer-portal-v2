@@ -75,4 +75,8 @@ export class EventRole implements EventRoleProps {
     async fetchRegistrations() {
         return EventRegistrationManager.fetch({ eventRoleId: this.id! });
     }
+
+    async fetchTrainings() {
+        
+    }
 }
