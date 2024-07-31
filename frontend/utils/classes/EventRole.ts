@@ -5,6 +5,7 @@ import { EventDetailProps, EventDetails, EventStatus } from "./EventDetails";
 import { EventRegistration, EventRegistrationProps, RegistrationStatus } from "./EventRegistration";
 
 interface MandatoryCustomEventRoleProps {
+    "Volunteer_Event_Role_Details.Role": number | null;
     "Volunteer_Event_Role_Details.Role:label": string | null;
     "Volunteer_Event_Role_Details.Vacancy": number | null;
     "Volunteer_Event_Role_Details.Approval_Required": boolean | null;
@@ -30,6 +31,7 @@ export class EventRole implements EventRoleProps {
     public event: EventDetails;
     public "status_id:name": EventStatus | null;
 
+    public "Volunteer_Event_Role_Details.Role": number | null;
     public "Volunteer_Event_Role_Details.Role:label": string | null;
     public "Volunteer_Event_Role_Details.Vacancy": number | null;
     public "Volunteer_Event_Role_Details.Approval_Required": boolean;
@@ -74,9 +76,5 @@ export class EventRole implements EventRoleProps {
 
     async fetchRegistrations() {
         return EventRegistrationManager.fetch({ eventRoleId: this.id! });
-    }
-
-    async fetchTrainings() {
-        
     }
 }

@@ -4,7 +4,9 @@ import CRM, { ComparisonOperator } from "../crm";
 import { format } from "date-fns";
 
 export interface FetchOptions {
-    id?: string;
+    eventRoleId?: string | number;
+    eventId?: number;
+    roleId?: number;
     search?: string | null;
     startDate?: string | null;
     endDate?: string | null;
@@ -13,26 +15,40 @@ export interface FetchOptions {
     page?: number;
     [key: string]: any;
     select?: string[];
+    onlyToday?: boolean;
+    fullRange?: boolean;
 }
 
 const EventRoleManager = new class EventRoleManager {
     private entity = "Activity";
 
     async fetch(options?: FetchOptions): Promise<EventRole | EventRole[]> {
-        const where: [string, ComparisonOperator, string][] = [["activity_type_id:name", "=", "Volunteer Event Role"]];
-        if (options?.id) where.push(["id", "=", options.id]);
+        const where: [string, ComparisonOperator, any][] = [["activity_type_id:name", "=", "Volunteer Event Role"]];
+        if (options?.eventRoleId) where.push(["id", "=", options.eventRoleId]);
         else {
+            // Fetch every event role where its event id
+            if (options?.eventId) where.push(["Volunteer_Event_Role_Details.Event", "=", options.eventId]);
+            // Fetch every event role where its role id
+            if (options?.roleId) where.push(["Volunteer_Event_Role_Details.Role", "=", options.roleId]);
+            // Get any event where the subject contains the search provided
             if (options?.search) where.push(["event.subject", "CONTAINS", options.search]);
+            // If there is a start date provided
             if (options?.startDate) {
                 const startDate = JSON.parse(options.startDate);
-                where.push(
-                    ["activity_date_time", ">=", `${moment(startDate).format("YYYY-MM-DD")} 00:00:00`],
-                    ["activity_date_time", "<=", `${moment(options.endDate ? JSON.parse(options.endDate) : startDate).format("YYYY-MM-DD")} 23:59:59`]
-                );
+                // Set the range to be any after the beginning of that date
+                where.push(["activity_date_time", ">=", `${moment(startDate).format("YYYY-MM-DD")} 00:00:00`]);
+                // And unless they want a range (if they didn't provide an endDate), make it so that it only returns that specific day
+                if (options.onlyToday) where.push(["activity_date_time", "<=", `${moment(options.endDate ? JSON.parse(options.endDate) : startDate).format("YYYY-MM-DD")} 23:59:59`]);
             }
-            else if (options?.endDate) {
-                const endDate = JSON.parse(options.endDate);
-                where.push(["event.activity_date_time", "<=", `${moment(endDate).format("YYYY-MM-DD")} 23:59:59`]);
+            // Otherewise
+            else {
+                // Set the starter to be any event from today onwards, since it can be assumed that it's still available
+                if (!options?.fullRange) where.push(["activity_date_time", ">=", `${moment(new Date()).format("YYYY-MM-DD")} 00:00:00`]);
+                // GEt every single activty where it's before the end of the provided day
+                if (options?.endDate) {
+                    const endDate = JSON.parse(options.endDate);
+                    where.push(["activity_date_time", "<=", `${moment(endDate).format("YYYY-MM-DD")} 23:59:59`]);
+                }
             }
         }
 
@@ -59,7 +75,7 @@ const EventRoleManager = new class EventRoleManager {
                 "event.location",
                 "event.status_id:name",
                 "event.Volunteer_Event_Details.*",
-                
+
                 "thumbnail.uri"
             ],
             join: [
@@ -71,7 +87,7 @@ const EventRoleManager = new class EventRoleManager {
             group: options?.grouped ? ["Volunteer_Event_Role_Details.Event", "Volunteer_Event_Role_Details.Role"] : []
         });
 
-        if (options?.id) return new EventRole(response!.data[0]);
+        if (options?.eventRoleId) return new EventRole(response!.data[0]);
         return response?.data.map((r: EventRoleProps) => new EventRole(r));
     }
 

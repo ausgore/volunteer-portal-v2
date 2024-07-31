@@ -1,4 +1,6 @@
 import CRM from "../crm";
+import EventRoleManager, { FetchOptions } from "../managers/EventRoleManager";
+import { EventRole } from "./EventRole";
 
 export enum EventStatus {
     Scheduled = "Scheduled",
@@ -59,6 +61,10 @@ export class EventDetails implements EventDetailProps {
             result[key] = data ? data["option.label"] : this[key as keyof EventDetails]
         }
         return result;
+    }
+
+    public async fetchSchedules(props?: FetchOptions) {
+        return await EventRoleManager.fetch({ eventId: this.id!, ...props }) as EventRole[];
     }
 }
 

@@ -14,7 +14,7 @@ import { IoMdBriefcase } from "react-icons/io";
 import { EventRegistration, RegistrationStatus } from "../../utils/classes/EventRegistration";
 import swal from "sweetalert";
 
-export default function Event() {
+export default function Event2() {
     const { id } = useParams();
 
     const [eventRole, setEventRole] = useState<EventRole>();
@@ -23,7 +23,7 @@ export default function Event() {
 
     useEffect(() => {
         (async function () {
-            const eventRole = await EventRoleManager.fetch({ id }) as EventRole;
+            const eventRole = await EventRoleManager.fetch({ eventRoleId: id }) as EventRole;
             setRegistrations(await eventRole.fetchRegistrations());
             setOptionalFields(await eventRole.event.getOptionalCustomFields());
             setEventRole(eventRole);
