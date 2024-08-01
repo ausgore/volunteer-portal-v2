@@ -5,8 +5,8 @@ import { format } from "date-fns";
 
 export interface FetchOptions {
     eventRoleId?: string | number;
-    eventId?: number;
-    roleId?: number;
+    eventId?: string | number;
+    roleId?: string | number;
     search?: string | null;
     startDate?: string | null;
     endDate?: string | null;
@@ -17,6 +17,7 @@ export interface FetchOptions {
     select?: string[];
     onlyToday?: boolean;
     fullRange?: boolean;
+    where?: [string,ComparisonOperator, any][];
 }
 
 const EventRoleManager = new class EventRoleManager {
@@ -24,6 +25,7 @@ const EventRoleManager = new class EventRoleManager {
 
     async fetch(options?: FetchOptions): Promise<EventRole | EventRole[]> {
         const where: [string, ComparisonOperator, any][] = [["activity_type_id:name", "=", "Volunteer Event Role"]];
+        if (options?.where) where.push(...options.where);
         if (options?.eventRoleId) where.push(["id", "=", options.eventRoleId]);
         else {
             // Fetch every event role where its event id
@@ -63,6 +65,7 @@ const EventRoleManager = new class EventRoleManager {
                 "activity_date_time",
                 "duration",
                 "status_id:name",
+                "lcoation",
 
                 "Volunteer_Event_Role_Details.*",
                 "Volunteer_Event_Role_Details.Role:label",
@@ -92,44 +95,12 @@ const EventRoleManager = new class EventRoleManager {
     }
 
     async fetchUnregistered(registeredEventRoles: number[]) {
-        // console.log(registeredEventRoles);
         const now = new Date();
         const formattedNow = format(now, "yyyy-MM-dd HH:mm:ss");
-        const response = await CRM("Activity", "get", {
-            select: [
-                "activity_date_time",
-                "duration",
-                "status_id:name",
-
-                "Volunteer_Event_Role_Details.*",
-                "Volunteer_Event_Role_Details.Role:label",
-
-                "event.id",
-                "event.activity_date_time",
-                "event.subject",
-                "event.duration",
-                "event.details",
-                "event.location",
-                "event.status_id:name",
-                "event.Volunteer_Event_Details.*",
-
-                "thumbnail.uri"
-            ],
-            join: [
-                ["Activity AS event", "LEFT", ["event.id", "=", "Volunteer_Event_Role_Details.Event"]],
-                ["File AS thumbnail", "LEFT", ["thumbnail.id", "=", "event.Volunteer_Event_Details.Thumbnail"]]
-            ],
-            where: [
-                ["activity_type_id:name", "=", "Volunteer Event Role"],
-                ['activity_date_time', '>', formattedNow],
-                ['id', 'NOT IN', registeredEventRoles],
-            ],
-            order: [
-                ['activity_date_time', 'ASC'],
-            ],
-            limit: 3,
-        });
-        return response?.data.map((r: EventRoleProps) => new EventRole(r));
+        return await this.fetch({ where: [
+            ["activity_date_time", ">", formattedNow],
+            ["id", "NOT IN", registeredEventRoles]
+        ]})
     }
 
 };

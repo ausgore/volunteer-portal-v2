@@ -9,21 +9,19 @@ import moment from "moment";
 import { RiCalendarScheduleLine } from "react-icons/ri";
 import { Spinner } from "flowbite-react";
 
-interface EventCard {
+interface EventCardProps {
     eventRole: EventRole;
     className?: string;
 }
 
-export default function EventCard(props: EventCard) {
+export default function EventCard(props: EventCardProps) {
     const [schedules, setSchedules] = useState<EventRole[]>();
     const [startDate, setStartDate] = useState<Date>();
     const [endDate, setEndDate] = useState<Date>();
     useEffect(() => {
         (async () => {
             const timestamps = (await props.eventRole.event.fetchSchedules({ fullRange: true, roleId: props.eventRole["Volunteer_Event_Role_Details.Role"]!, select: ["activity_date_time"] })).map(e => e.activity_date_time).map(ds => new Date(ds!).getTime());
-
             const schedules =  await props.eventRole.event.fetchSchedules({ roleId: props.eventRole["Volunteer_Event_Role_Details.Role"]! });
-            console.log(schedules);
             setSchedules(schedules);
 
             const start = new Date(Math.min(...timestamps));
@@ -37,7 +35,7 @@ export default function EventCard(props: EventCard) {
 
     return <Card
         className={props.className}
-        url={`/events/${props.eventRole.event.id}`}
+        url={`/events/${props.eventRole.event.id}/${props.eventRole["Volunteer_Event_Role_Details.Role"]}`}
         thumbnail={props.eventRole.event.thumbnail}
         cancelled={props.eventRole.event["status_id:name"] == EventStatus.Cancelled}
     >
@@ -46,13 +44,13 @@ export default function EventCard(props: EventCard) {
             {/* Date and Time */}
             <div className="flex items-center">
                 <FiCalendar className="text-secondary mr-3" />
-                <span className="text-sm font-semibold">
+                {schedules ? <span className="text-sm font-semibold">
                     {moment(startDate).format("D MMM YYYY")}
                     {moment(startDate).format("D MMM YYYY") != moment(endDate).format("D MMM YYYY") && <>
                         <span className="text-sm mx-1">-</span>
                         {moment(endDate).format("D MMM YYYY")}
                     </>}
-                </span>
+                </span> : <Spinner className="w-[14px] h-[14px] fill-secondary mr-1" />}
             </div>
             {/* Location */}
             <div className="gap-x-3 flex items-center">
