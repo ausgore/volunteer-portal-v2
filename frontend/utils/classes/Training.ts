@@ -1,4 +1,4 @@
-import { TrainingSchedules, TrainingSchedulesProps } from "./TrainingSchedules";
+import { TrainingSchedule, TrainingScheduleProps } from "./TrainingSchedule";
 import CRM from "../crm";
 
 export enum TrainingStatus {
@@ -46,7 +46,7 @@ export class Training implements TrainingProps {
         }
     }
 
-    async fetchSchedules(trainingId: number) {
+    async fetchSchedules(trainingId?: string) {
         const response = await CRM("Activity", "get", {
             select: [
                 'activity_date_time',
@@ -63,6 +63,6 @@ export class Training implements TrainingProps {
             // limit?
         });
 
-        return response?.data.map((ts: TrainingSchedulesProps) => new TrainingSchedules(ts));
+        return response?.data.map((ts: TrainingScheduleProps) => new TrainingSchedule(ts));
     }
 }
