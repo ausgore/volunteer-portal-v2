@@ -1,4 +1,6 @@
 import CRM from "../crm";
+import EventRoleManager, { FetchOptions } from "../managers/EventRoleManager";
+import { EventRole } from "./EventRole";
 
 export enum EventStatus {
     Scheduled = "Scheduled",
@@ -18,7 +20,7 @@ export interface EventDetailProps extends MandatoryCustomEventDetailProps {
     duration: number | null;
     details: string | null;
     location: string | null;
-    thumbnail: string | null;
+    "thumbnail.uri": string | null;
     "status_id:name": null | EventStatus;
 }
 
@@ -29,7 +31,7 @@ export class EventDetails implements EventDetailProps {
     public duration: number | null = null;
     public details: string | null = null;
     public location: string | null = null;
-    public thumbnail: string | null = null;
+    public "thumbnail.uri": string | null = null;
     public "status_id:name": null | EventStatus = null;
 
     public "Volunteer_Event_Details.Attendance_Code": string | null = null;
@@ -41,9 +43,10 @@ export class EventDetails implements EventDetailProps {
     }
 
     public async getOptionalCustomFields() {
+        // Effectively comparing the keys this current object has with a newly made instance
+        // The reason for this is that the newly made instance will not have properties that this current object has
         const keys = Object.keys(this);
-        const emptyEventDetails = new EventDetails({} as EventDetailProps);
-        const defaultKeys = Object.keys(emptyEventDetails);
+        const defaultKeys = Object.keys(new EventDetails({} as EventDetailProps));
         const customKeys = keys.filter(k => !defaultKeys.includes(k));
 
         const response = await CRM("OptionGroup", "get", {
@@ -59,6 +62,10 @@ export class EventDetails implements EventDetailProps {
             result[key] = data ? data["option.label"] : this[key as keyof EventDetails]
         }
         return result;
+    }
+
+    public async fetchSchedules(props?: FetchOptions) {
+        return await EventRoleManager.fetch({ eventId: this.id!, ...props }) as EventRole[];
     }
 }
 

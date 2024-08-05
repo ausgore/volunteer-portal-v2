@@ -5,6 +5,7 @@ import { EventDetailProps, EventDetails, EventStatus } from "./EventDetails";
 import { EventRegistration, EventRegistrationProps, RegistrationStatus } from "./EventRegistration";
 
 interface MandatoryCustomEventRoleProps {
+    "Volunteer_Event_Role_Details.Role": number | null;
     "Volunteer_Event_Role_Details.Role:label": string | null;
     "Volunteer_Event_Role_Details.Vacancy": number | null;
     "Volunteer_Event_Role_Details.Approval_Required": boolean | null;
@@ -17,6 +18,7 @@ interface MandatoryCustomEventRoleProps {
 
 export interface EventRoleProps extends MandatoryCustomEventRoleProps {
     id: number | null;
+    location: string | null;
     activity_date_time: string | null;
     duration: number | null;
     "status_id:name": EventStatus | null;
@@ -25,11 +27,13 @@ export interface EventRoleProps extends MandatoryCustomEventRoleProps {
 
 export class EventRole implements EventRoleProps {
     public id: number | null;
+    public location: string | null;
     public activity_date_time: string | null;
     public duration: number | null;
     public event: EventDetails;
     public "status_id:name": EventStatus | null;
 
+    public "Volunteer_Event_Role_Details.Role": number | null;
     public "Volunteer_Event_Role_Details.Role:label": string | null;
     public "Volunteer_Event_Role_Details.Vacancy": number | null;
     public "Volunteer_Event_Role_Details.Approval_Required": boolean;
@@ -43,6 +47,7 @@ export class EventRole implements EventRoleProps {
         this.id = props.id;
         this.activity_date_time = props.activity_date_time;
         this.duration = props.duration;
+        this.location = props.location;
         this["status_id:name"] = props["status_id:name"];
 
         const eventDetails: Partial<EventDetailProps> = {};
@@ -52,7 +57,7 @@ export class EventRole implements EventRoleProps {
             else if (key.startsWith("event"))
                 eventDetails[key.split("event.")[1]] = props[key];
             else if (key.startsWith("thumbnail"))
-                eventDetails.thumbnail = props[key];
+                eventDetails["thumbnail.uri"] = props[key]
         this.event = new EventDetails(eventDetails);
     }
 
@@ -74,9 +79,5 @@ export class EventRole implements EventRoleProps {
 
     async fetchRegistrations() {
         return EventRegistrationManager.fetch({ eventRoleId: this.id! });
-    }
-
-    async fetchTrainings() {
-        
     }
 }
