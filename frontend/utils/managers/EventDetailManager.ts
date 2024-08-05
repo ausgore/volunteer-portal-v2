@@ -15,7 +15,7 @@ const EventDetailManager = new class EventDetailManager {
                 "details",
                 "location",
                 "status_id:name",
-                "Voulnteer_Event_Details.*",
+                "Volunteer_Event_Details.*",
                 "thumbnail.uri"
             ],
             join: [

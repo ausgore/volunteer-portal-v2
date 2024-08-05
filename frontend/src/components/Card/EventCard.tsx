@@ -36,7 +36,7 @@ export default function EventCard(props: EventCardProps) {
     return <Card
         className={props.className}
         url={`/events/${props.eventRole.event.id}/${props.eventRole["Volunteer_Event_Role_Details.Role"]}`}
-        thumbnail={props.eventRole.event.thumbnail}
+        thumbnail={props.eventRole.event["thumbnail.uri"]}
         cancelled={props.eventRole.event["status_id:name"] == EventStatus.Cancelled}
     >
         <h1 className="font-semibold mb-4">{props.eventRole.event.subject}</h1>
@@ -60,7 +60,7 @@ export default function EventCard(props: EventCardProps) {
             <div className="flex gap-x-3 items-center">
                 <RiCalendarScheduleLine className="text-secondary" />
                 <span className="text-sm font-semibold items-center">
-                    {schedules ? schedules.length > 1 ? "Multiple Shifts" : schedules.length == 1 ? `${moment(schedules[0].activity_date_time).format("hh:mm A")} - ${moment(new Date(schedules[0].activity_date_time!).getTime() + (schedules[0].duration! * 60 * 1000)).format("hh:mm A")}` : "No Shifts Available" : <Spinner className="w-[14px] h-[14px] fill-secondary mr-1" />}
+                    {schedules ? schedules.length > 1 ? "Multiple Schedules" : schedules.length == 1 ? `${moment(schedules[0].activity_date_time).format("hh:mm A")} - ${moment(new Date(schedules[0].activity_date_time!).getTime() + (schedules[0].duration! * 60 * 1000)).format("hh:mm A")}` : "No Schedules Available" : <Spinner className="w-[14px] h-[14px] fill-secondary mr-1" />}
                 </span>
             </div>
             {/* Role */}

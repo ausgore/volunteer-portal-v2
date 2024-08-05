@@ -57,7 +57,7 @@ export class EventRole implements EventRoleProps {
             else if (key.startsWith("event"))
                 eventDetails[key.split("event.")[1]] = props[key];
             else if (key.startsWith("thumbnail"))
-                eventDetails.thumbnail = props[key];
+                eventDetails["thumbnail.uri"] = props[key]
         this.event = new EventDetails(eventDetails);
     }
 

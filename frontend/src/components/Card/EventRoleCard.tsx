@@ -22,7 +22,9 @@ export default function EventRoleCard(props: EventRoleCardProps) {
 
     return <Card
         className={props.className}
-        url={`/events/${props.eventRole.event.id}/${props.eventRole["Volunteer_Event_Role_Details.Role"]}`}>
+        thumbnail={props.eventRole.event["thumbnail.uri"]}
+        url={`/events/${props.eventRole.event.id}/${props.eventRole["Volunteer_Event_Role_Details.Role"]}`}
+    >
         <h1 className="font-semibold mb-4">{props.eventRole.event.subject}</h1>
         <div className="grid grid-rows-1 gap-y-2 text-black/70">
             {/* Date and Time */}
