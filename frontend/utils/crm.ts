@@ -10,7 +10,10 @@ interface ParamProps {
     values?: [string, any][];
     offset?: number;
     join?: [string, string, ...[string, ComparisonOperator, any?][]][];
-    group?: string[]
+    group?: string[];
+    chain?: {
+        [key: string]: [string, string, ParamProps];
+    }
 }
 
 export default async function CRM(entity: string, action: string, params?: ParamProps) {

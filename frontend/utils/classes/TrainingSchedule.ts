@@ -1,3 +1,9 @@
+import CRM from "../crm";
+import ContactManager from "../managers/ContactManager";
+import TrainingRegistrationManager from "../managers/TrainingRegistrationManager";
+import { Training, TrainingProps } from "./Training";
+import { TrainingRegistration, TrainingRegistrationProps } from "./TrainingRegistration";
+
 export enum TrainingScheduleStatus {
     Scheduled = "Scheduled",
     Cancelled = "Cancelled"
@@ -27,11 +33,50 @@ export class TrainingSchedule implements TrainingScheduleProps {
     public 'Volunteer_Training_Schedule_Details.Registration_Start_Date': string | null;
     public 'Volunteer_Training_Schedule_Details.Registration_End_Date': string | null;
     public 'Volunteer_Training_Schedule_Details.Expiration_Date': string | null;
+
+    public training: Training;
+
+    public registrations: TrainingRegistration[] = [];
+
     [key: string]: any;
 
-    constructor(props: Partial<TrainingScheduleProps>) {
+    constructor(props: TrainingScheduleProps) {
+        this.id = props.id;
+        this.activity_date_time = props.activity_date_time;
+        this["status_id:name"] = props["status_id:name"];
+
+        const trainingDetails: Partial<TrainingProps> = {};
         for (const key in props) {
-            this[key as keyof TrainingSchedule] = props[key];
+            if (key.startsWith("Volunteer_Training_Schedule_Details"))
+                this[key] = props[key];
+            else if (key.startsWith("training"))
+                trainingDetails[key.split("training.")[1]] = props[key];
         }
+        this.training = new Training(trainingDetails);
+
+        // Process the registrations if provided
+        if (props.registrations) {
+            this.registrations = props.registrations.map(
+                (r: TrainingRegistrationProps) => new TrainingRegistration(r)
+            );
+        }
+    }
+
+    async register(email: string) {
+        const contact = await ContactManager.fetch(email);
+
+        await CRM("Activity", "create", {
+            values: [
+                ["activity_type_id:name", "Volunteer Training Registration"],
+                ["target_contact_id", [contact.id]],
+                ["source_contact_id", contact.id],
+                ["subject", this.training.subject],
+                ["status_id:name", "Scheduled"],
+                ["Volunteer_Training_Registration_Details.Training_Schedule", this.id],
+            ]
+        }).catch(() => null);
+
+        console.log(this.training.fetchSchedules())
+        return this.training.fetchSchedules();
     }
 }

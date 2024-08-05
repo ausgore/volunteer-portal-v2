@@ -9,84 +9,112 @@ import config from "../../../config";
 import { CiFileOff } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
+import { Spinner } from "flowbite-react";
 
 export default function TrainingPage() {
     const { id } = useParams();
     const navigate = useNavigate();
     const [training, setTraining] = useState<Training>();
     const [schedules, setSchedules] = useState<TrainingSchedule[]>([]);
+    const [loadingScheduleId, setLoadingScheduleId] = useState<number | null>(null);
+    const email = (window as any).email ?? config.email;
 
     useEffect(() => {
         (async () => {
             const training = await TrainingManager.fetch({ id }) as Training;
             setTraining(training);
 
-            const trainingSchedules = await training?.fetchSchedules(id) as TrainingSchedule[];
+            const trainingSchedules = await training?.fetchSchedules() as TrainingSchedule[];
             console.log(trainingSchedules);
             setSchedules(trainingSchedules);
         })();
     }, [id]);
 
-    const handleRegisterClick = async (scheduleId: number | null) => {
+    const isUserRegistered = (schedule: TrainingSchedule, email: string) => {
+        return schedule.registrations.some(
+            registration => registration["contact.email_primary.email"] === email
+        );
+    };
+
+    const handleRegisterClick = async (schedule: TrainingSchedule) => {
+        if (isUserRegistered(schedule, email)) {
+            alert("You are already registered for this training.");
+            return;
+        }
+
+        setLoadingScheduleId(schedule.id); // Set loading state for this schedule
+
         try {
-            alert(`Registering user for schedule ID: ${scheduleId}`);
+            const registration = await schedule.register(email);
+
+            if (registration) {
+                // Update the schedule with the new registration
+                setSchedules(prevSchedules =>
+                    prevSchedules.map(s =>
+                        s.id === schedule.id
+                            ? new TrainingSchedule({
+                                  ...s,
+                                  registrations: [...s.registrations, registration]
+                              })
+                            : s
+                    )
+                );
+            }
         } catch (error) {
             console.error('Error during registration:', error);
             alert('An error occurred. Please try again later.');
+        } finally {
+            setLoadingScheduleId(null); // Reset loading state
         }
     };
 
-    const renderSchedulesTable = () => (
-        <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+    const renderSchedulesTable = () => {
+        if (schedules.length === 0) {
+            return (
                 <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Training Date</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vacancy</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registration Start</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registration End</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valid Till</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Register</th>
+                    <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
+                        No schedules available
+                    </td>
                 </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-                {schedules.length > 0 ? (
-                    schedules.map((schedule, index) => {
-                        const Activity_Date_Time = schedule.activity_date_time ?? 'N/A';
-                        const Vacancy = schedule["Volunteer_Training_Schedule_Details.Vacancy"] ?? 'N/A';
-                        const Registration_Start_Date = schedule["Volunteer_Training_Schedule_Details.Registration_Start_Date"] ?? 'N/A';
-                        const Registration_End_Date = schedule["Volunteer_Training_Schedule_Details.Registration_End_Date"] ?? 'N/A';
-                        const Expiration_Date = schedule["Volunteer_Training_Schedule_Details.Expiration_Date"] ?? 'N/A';
-                        const currentDate = moment();
-                        const isRegistrationOpen = Registration_Start_Date !== 'N/A' && Registration_End_Date !== 'N/A' && currentDate.isBetween(moment(Registration_Start_Date), moment(Registration_End_Date)) && Vacancy !== 'N/A' && Vacancy > 0;
+            );
+        }
 
-                        return (
-                            <tr key={index}>
-                                <td className="px-6 py-4 whitespace-nowrap">{Activity_Date_Time}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{Vacancy}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{Registration_Start_Date}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{Registration_End_Date}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{Expiration_Date}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <button
-                                        disabled={!isRegistrationOpen}
-                                        className={`px-4 py-2 rounded ${isRegistrationOpen ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
-                                        onClick={() => handleRegisterClick(schedule.id)}>
-                                        {isRegistrationOpen ? 'Register' : 'Closed'}
-                                    </button>
-                                </td>
-                            </tr>
-                        );
-                    })
-                ) : (
-                    <tr>
-                        <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
-                            No schedules available
-                        </td>
-                    </tr>
-                )}
+        return (
+            <tbody className="bg-white divide-y divide-gray-200">
+                {schedules.map((schedule, index) => {
+                    const Activity_Date_Time = schedule.activity_date_time ?? 'N/A';
+                    const Vacancy = schedule["Volunteer_Training_Schedule_Details.Vacancy"] ?? 'N/A';
+                    const NumRegistrations = schedule.registrations.length;
+                    const Registration_Start_Date = schedule["Volunteer_Training_Schedule_Details.Registration_Start_Date"] ?? 'N/A';
+                    const Registration_End_Date = schedule["Volunteer_Training_Schedule_Details.Registration_End_Date"] ?? 'N/A';
+                    const Expiration_Date = schedule["Volunteer_Training_Schedule_Details.Expiration_Date"] ?? 'N/A';
+                    const currentDate = moment();
+                    const isRegistrationOpen = Registration_Start_Date !== 'N/A' && Registration_End_Date !== 'N/A' && currentDate.isBetween(moment(Registration_Start_Date), moment(Registration_End_Date)) && Vacancy !== 'N/A' && (Vacancy - NumRegistrations) > 0;
+
+                    const userIsRegistered = isUserRegistered(schedule, email);
+                    const isRegistering = loadingScheduleId === schedule.id;
+
+                    return (
+                        <tr key={index}>
+                            <td className="px-6 py-4 whitespace-nowrap">{Activity_Date_Time}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">{Registration_Start_Date}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">{Registration_End_Date}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">{Expiration_Date}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">{NumRegistrations}/{Vacancy}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                                <button
+                                    disabled={!isRegistrationOpen || userIsRegistered || isRegistering}
+                                    className={`px-4 py-2 rounded ${userIsRegistered ? 'bg-blue-500 text-white cursor-not-allowed' : isRegistrationOpen ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
+                                    onClick={() => handleRegisterClick(schedule)}>
+                                    {isRegistering ? 'Registering...' : userIsRegistered ? 'Registered' : isRegistrationOpen ? 'Register' : 'Closed'}
+                                </button>
+                            </td>
+                        </tr>
+                    );
+                })}
             </tbody>
-        </table>
-    );
+        );
+    };
 
     return (
         <Wrapper>
@@ -128,7 +156,31 @@ export default function TrainingPage() {
                         </header>
                         <br />
                         {/* Schedules */}
-                        {renderSchedulesTable()}
+                        <h3 className="text-xl text-black font-semibold">Training Schedule</h3>
+                        <br />
+                        <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Training Date</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registration Start</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registration End</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valid Till</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Participants</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Register</th>
+                                </tr>
+                            </thead>
+                            {schedules.length === 0 ? (
+                                <tbody>
+                                    <tr>
+                                        <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
+                                            <Spinner className="w-[25px] h-[25px] fill-secondary" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            ) : (
+                                renderSchedulesTable()
+                            )}
+                        </table>
                     </div>
                 </div>
             )}
