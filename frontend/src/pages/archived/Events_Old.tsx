@@ -7,13 +7,13 @@ import config from "../../../../config";
 import ContactManager from "../../../utils/managers/ContactManager";
 import { createSearchParams, useSearchParams } from "react-router-dom";
 import Loading from "../../components/Loading";
-import EventCard from "../../components/Card/EventCard";
 import DropdownButton from "../../components/DropdownButton";
 import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import EventRoleCard from "../../components/Card/EventRoleCard";
 
 const limit = 9;
-export default function Events() {
+export default function EventsOld() {
     const [eventRoles, setEventRoles] = useState<EventRole[] | null>(null);
     const [totalPages, setTotalPages] = useState(1);
     const [search, setSearch] = useState("");
@@ -92,8 +92,6 @@ export default function Events() {
             startDate: searchParams.get("startDate"),
             endDate: searchParams.get("endDate"),
             select: ["id"],
-            grouped: true,
-            onlyToday: true
         })).length;
 
         // Get the total number of pages based on the total documents / limit
@@ -112,8 +110,6 @@ export default function Events() {
             startDate: searchParams.get("startDate"),
             endDate: searchParams.get("endDate"),
             page, limit,
-            grouped: true,
-            onlyToday: true
         });
 
         setEventRoles(eventRoles as EventRole[]);
@@ -226,7 +222,7 @@ export default function Events() {
                     {!eventRoles.length && <p className="text-lg text-gray-500">Looks like there aren't any events</p>}
                     {/* If there are events, display */}
                     {eventRoles.length > 0 && <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 mt-6">
-                        {eventRoles.map(eventRole => <EventCard className="flex justify-center" event={eventRole.event} roleId={eventRole["Volunteer_Event_Role_Details.Role"]!} roleName={eventRole["Volunteer_Event_Role_Details.Role:label"]!}  />)}
+                        {eventRoles.map(eventRole => <EventRoleCard className="flex justify-center" eventRole={eventRole} url={`/archived/events/${eventRole.id}`} />)}
                     </div>}
                     {/* If there is more than 1 page */}
                     {totalPages > 1 && <div className="mt-8 items-center justify-center text-center w-full">

@@ -136,21 +136,14 @@ export default function TrainingPage() {
                             )}
                         </div>
                         {/* Header */}
-                        <header className="flex flex-row justify-between w-full gap-x-4">
-                            {/* Description */}
-                            <div className="flex-grow">
-                                <h2 className="text-2xl text-black/90 font-bold">{training.subject}</h2>
-                                {training.details && (
-                                    <div
-                                        className="max-w-[780px] mt-4 text-black/70"
-                                        dangerouslySetInnerHTML={{ __html: training.details }}
-                                    />
-                                )}
-                            </div>
-                            {/* Sign Up Section */}
-                            <div className="text-center min-w-[180px] max-w-[180px] hidden lg:block">
-                                <button>Sign Up</button>
-                            </div>
+                        <header className="w-full">
+                            <h2 className="text-2xl text-black/90 font-bold">{training.subject}</h2>
+                            {training.details && (
+                                <div
+                                    className="max-w-[780px] mt-4 text-black/70"
+                                    dangerouslySetInnerHTML={{ __html: training.details }}
+                                />
+                            )}
                         </header>
                         <br />
                         {/* Schedules */}

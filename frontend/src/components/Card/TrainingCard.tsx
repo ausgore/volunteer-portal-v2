@@ -18,6 +18,13 @@ export default function TrainingCard(props: TrainingCardProps) {
         return temp.textContent || temp.innerText || "";
     }
 
+    useEffect(() => {
+        (async () => {
+            const schedules = await props.training.fetchSchedules({ select: ["id"] });
+            setSchedules(schedules);
+        })();
+    }, []);
+
 
     return <Card
         className={props.className}

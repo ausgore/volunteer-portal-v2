@@ -1,6 +1,10 @@
 import { TrainingSchedule, TrainingScheduleProps } from "./TrainingSchedule";
 import CRM from "../crm";
 
+interface TrainingScheduleFetchOptions {
+    select?: string[];
+}
+
 export enum TrainingStatus {
     Scheduled = "Scheduled",
     Cancelled = "Cancelled"
@@ -46,9 +50,10 @@ export class Training implements TrainingProps {
         }
     }
 
-    async fetchSchedules() {
+    async fetchSchedules(props?: TrainingScheduleFetchOptions) {
+
         const response = await CRM('Activity', 'get', {
-            select: [
+            select: props?.select ?? [
                 'activity_date_time',
                 'status_id:name',
                 'subject',
