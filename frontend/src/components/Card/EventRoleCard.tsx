@@ -11,6 +11,7 @@ import { Spinner } from "flowbite-react";
 interface EventRoleCardProps {
     eventRole: EventRole;
     className?: string;
+    url?: string;
 }
 export default function EventRoleCard(props: EventRoleCardProps) {
     const [volunteers, setVolunteers] = useState<EventRegistration[]>();
@@ -23,7 +24,7 @@ export default function EventRoleCard(props: EventRoleCardProps) {
     return <Card
         className={props.className}
         thumbnail={props.eventRole.event["thumbnail.uri"]}
-        url={`/events/${props.eventRole.event.id}/${props.eventRole["Volunteer_Event_Role_Details.Role"]}`}
+        url={props.url ?? `/events/${props.eventRole.event.id}/${props.eventRole["Volunteer_Event_Role_Details.Role"]}`}
     >
         <h1 className="font-semibold mb-4">{props.eventRole.event.subject}</h1>
         <div className="grid grid-rows-1 gap-y-2 text-black/70">

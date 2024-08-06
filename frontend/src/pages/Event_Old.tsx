@@ -14,7 +14,7 @@ import { IoMdBriefcase } from "react-icons/io";
 import { EventRegistration, RegistrationStatus } from "../../utils/classes/EventRegistration";
 import swal from "sweetalert";
 
-export default function Event2() {
+export default function EventOld() {
     const { id } = useParams();
 
     const [eventRole, setEventRole] = useState<EventRole>();

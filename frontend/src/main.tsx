@@ -5,10 +5,11 @@ import "./main.css";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import Events from "./pages/Events";
-import Event2 from "./pages/Event2";
+import EventOld from "./pages/Event_Old";
 import Trainings from "./pages/Trainings";
 import Training from "./pages/Training";
 import Event from "./pages/Event";
+import EventsOld from "./pages/Events_Old";
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
 	<React.StrictMode>
@@ -18,7 +19,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 				<Route path="/profile" element={<Profile />} />
 				<Route path="/events" element={<Events />} />
 				<Route path="/events/:eventId/:roleId" element={<Event />} />
-				<Route path="/events2/:id" element={<Event2 />} />
+				<Route path="/archived/events" element={<EventsOld />} />
+				<Route path="/archived/events/:id" element={<EventOld />} />
 				<Route path="/trainings" element={<Trainings />} />
 				<Route path="/trainings/:id" element={<Training />} />
 			</Routes>
