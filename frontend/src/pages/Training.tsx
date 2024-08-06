@@ -10,6 +10,7 @@ import { CiFileOff } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import { Spinner } from "flowbite-react";
+import swal from 'sweetalert';
 
 export default function TrainingPage() {
     const { id } = useParams();
@@ -45,24 +46,21 @@ export default function TrainingPage() {
         setLoadingScheduleId(schedule.id); // Set loading state for this schedule
 
         try {
-            const registration = await schedule.register(email);
+            const registration = await schedule.register(email) as TrainingSchedule[];
+            console.log(registration);
 
             if (registration) {
-                // Update the schedule with the new registration
-                setSchedules(prevSchedules =>
-                    prevSchedules.map(s =>
-                        s.id === schedule.id
-                            ? new TrainingSchedule({
-                                  ...s,
-                                  registrations: [...s.registrations, registration]
-                              })
-                            : s
-                    )
-                );
+                // Update the whole schedule state with the new registration
+                setSchedules(registration);
+                swal(`You have registered for ${schedule.subject}`, {
+                    icon: "success",
+                });
             }
         } catch (error) {
             console.error('Error during registration:', error);
-            alert('An error occurred. Please try again later.');
+            swal(`Registration failed`, {
+                icon: "error"
+            });
         } finally {
             setLoadingScheduleId(null); // Reset loading state
         }

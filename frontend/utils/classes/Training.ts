@@ -51,6 +51,7 @@ export class Training implements TrainingProps {
             select: [
                 'activity_date_time',
                 'status_id:name',
+                'subject',
 
                 'Volunteer_Training_Schedule_Details.Vacancy',
                 'Volunteer_Training_Schedule_Details.Registration_Start_Date',
@@ -59,8 +60,9 @@ export class Training implements TrainingProps {
 
                 'training.id',
                 'training.subject',
-                'training.status_id',
-                'training.location',    
+                'training.status_id:name',
+                'training.location',  
+                'training.duration'  
             ],
             where: [
                 ['activity_type_id:name', '=', 'Volunteer Training Schedule'],

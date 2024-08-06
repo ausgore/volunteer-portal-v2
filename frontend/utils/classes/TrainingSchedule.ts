@@ -21,6 +21,7 @@ export interface TrainingScheduleProps extends MandatoryCustomTrainingSchedulePr
     id: number | null;
     activity_date_time: string | null;
     "status_id:name": TrainingScheduleStatus | null;
+    subject: string | null;
     [key: string]: any;
 }
 
@@ -28,6 +29,7 @@ export class TrainingSchedule implements TrainingScheduleProps {
     public id: number | null = null;
     public activity_date_time: string | null = null;
     public "status_id:name": TrainingScheduleStatus | null = null;
+    public subject: string | null = null;
 
     public 'Volunteer_Training_Schedule_Details.Vacancy': number | null;
     public 'Volunteer_Training_Schedule_Details.Registration_Start_Date': string | null;
@@ -44,6 +46,7 @@ export class TrainingSchedule implements TrainingScheduleProps {
         this.id = props.id;
         this.activity_date_time = props.activity_date_time;
         this["status_id:name"] = props["status_id:name"];
+        this.subject = props.subject;
 
         const trainingDetails: Partial<TrainingProps> = {};
         for (const key in props) {
@@ -70,13 +73,13 @@ export class TrainingSchedule implements TrainingScheduleProps {
                 ["activity_type_id:name", "Volunteer Training Registration"],
                 ["target_contact_id", [contact.id]],
                 ["source_contact_id", contact.id],
-                ["subject", this.training.subject],
+                ["subject", this.subject],
                 ["status_id:name", "Scheduled"],
                 ["Volunteer_Training_Registration_Details.Training_Schedule", this.id],
             ]
         }).catch(() => null);
 
-        console.log(this.training.fetchSchedules())
+        // console.log(this.training.fetchSchedules())
         return this.training.fetchSchedules();
     }
 }
