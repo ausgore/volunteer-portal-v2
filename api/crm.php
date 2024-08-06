@@ -25,6 +25,7 @@ $values = $query['values'] ?? array();
 $group = $query['group'] ?? array();
 $limit = $query['limit'] ?? null;
 $offset = $query['offset'] ?? null;
+$chain = $query['chain'] ?? array(); // New chain parameter
 
 // Initializing default params value
 $params = array(
@@ -60,6 +61,9 @@ if ($limit != null) {
 }
 if ($offset != null) {
     $params['offset'] = $offset;
+}
+if (is_array($chain) && !empty($chain)) {
+    $params['chain'] = $chain;
 }
 
 $result = civicrm_api4($entity, $action, $params);

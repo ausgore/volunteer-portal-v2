@@ -46,20 +46,46 @@ export class Training implements TrainingProps {
         }
     }
 
-    async fetchSchedules(trainingId?: string) {
-        const response = await CRM("Activity", "get", {
+    async fetchSchedules() {
+        const response = await CRM('Activity', 'get', {
             select: [
                 'activity_date_time',
                 'status_id:name',
+                'subject',
+
                 'Volunteer_Training_Schedule_Details.Vacancy',
                 'Volunteer_Training_Schedule_Details.Registration_Start_Date',
                 'Volunteer_Training_Schedule_Details.Registration_End_Date',
                 'Volunteer_Training_Schedule_Details.Expiration_Date',
+
+                'training.id',
+                'training.subject',
+                'training.status_id:name',
+                'training.location',  
+                'training.duration'  
             ],
             where: [
                 ['activity_type_id:name', '=', 'Volunteer Training Schedule'],
-                ['Volunteer_Training_Schedule_Details.Training', '=', trainingId],
+                ['Volunteer_Training_Schedule_Details.Training', '=', this.id],
             ],
+            join: [
+                ['Activity AS training', 'LEFT', ['training.id', '=', 'Volunteer_Training_Schedule_Details.Training']],
+            ],
+            chain: {
+                'registrations': ['Activity', 'get', {
+                    select: [
+                        'id',
+                        'status_id:name',
+                        'contact.email_primary.email',
+                    ],
+                    where: [
+                        ['Volunteer_Training_Registration_Details.Training_Schedule', '=', '$id']
+                    ],
+                    join: [
+                        ['Contact AS contact', 'LEFT', ['target_contact_id', '=', 'contact.id']],
+                    ],
+                }]
+            }
             // limit?
         });
 
