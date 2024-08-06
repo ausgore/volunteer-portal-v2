@@ -1,14 +1,14 @@
 import { KeyboardEvent, useEffect, useState } from "react";
-import Wrapper from "../components/Wrapper";
-import EventRoleManager from "../../utils/managers/EventRoleManager";
-import CustomFieldSetManager, { CustomField, CustomFieldOptions } from "../../utils/managers/CustomFieldSetManager";
-import { EventRole } from "../../utils/classes/EventRole";
-import config from "../../../config";
-import ContactManager from "../../utils/managers/ContactManager";
+import Wrapper from "../../components/Wrapper";
+import EventRoleManager from "../../../utils/managers/EventRoleManager";
+import CustomFieldSetManager, { CustomField, CustomFieldOptions } from "../../../utils/managers/CustomFieldSetManager";
+import { EventRole } from "../../../utils/classes/EventRole";
+import config from "../../../../config";
+import ContactManager from "../../../utils/managers/ContactManager";
 import { createSearchParams, useSearchParams } from "react-router-dom";
-import Loading from "../components/Loading";
-import EventCard from "../components/Card/EventCard";
-import DropdownButton from "../components/DropdownButton";
+import Loading from "../../components/Loading";
+import EventCard from "../../components/Card/EventCard";
+import DropdownButton from "../../components/DropdownButton";
 import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -226,7 +226,7 @@ export default function Events() {
                     {!eventRoles.length && <p className="text-lg text-gray-500">Looks like there aren't any events</p>}
                     {/* If there are events, display */}
                     {eventRoles.length > 0 && <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 mt-6">
-                        {eventRoles.map(eventRole => <EventCard className="flex justify-center" eventRole={eventRole} />)}
+                        {eventRoles.map(eventRole => <EventCard className="flex justify-center" event={eventRole.event} roleId={eventRole["Volunteer_Event_Role_Details.Role"]!} roleName={eventRole["Volunteer_Event_Role_Details.Role:label"]!}  />)}
                     </div>}
                     {/* If there is more than 1 page */}
                     {totalPages > 1 && <div className="mt-8 items-center justify-center text-center w-full">

@@ -2,7 +2,7 @@ import { EventRole } from "../../../utils/classes/EventRole";
 import Card from "./Card";
 import { GrLocation } from "react-icons/gr";
 import { IoBriefcaseOutline } from "react-icons/io5";
-import { EventStatus } from "../../../utils/classes/EventDetails";
+import { EventDetails, EventStatus } from "../../../utils/classes/EventDetails";
 import { useEffect, useState } from "react";
 import { FiCalendar } from "react-icons/fi";
 import moment from "moment";
@@ -10,7 +10,9 @@ import { RiCalendarScheduleLine } from "react-icons/ri";
 import { Spinner } from "flowbite-react";
 
 interface EventCardProps {
-    eventRole: EventRole;
+    event: EventDetails;
+    roleId: number;
+    roleName: String;
     className?: string;
 }
 
@@ -20,8 +22,8 @@ export default function EventCard(props: EventCardProps) {
     const [endDate, setEndDate] = useState<Date>();
     useEffect(() => {
         (async () => {
-            const timestamps = (await props.eventRole.event.fetchSchedules({ fullRange: true, roleId: props.eventRole["Volunteer_Event_Role_Details.Role"]!, select: ["activity_date_time"] })).map(e => e.activity_date_time).map(ds => new Date(ds!).getTime());
-            const schedules =  await props.eventRole.event.fetchSchedules({ roleId: props.eventRole["Volunteer_Event_Role_Details.Role"]! });
+            const timestamps = (await props.event.fetchSchedules({ fullRange: true, roleId: props.roleId!, select: ["activity_date_time"] })).map(e => e.activity_date_time).map(ds => new Date(ds!).getTime());
+            const schedules =  await props.event.fetchSchedules({ roleId: props.roleId! });
             setSchedules(schedules);
 
             const start = new Date(Math.min(...timestamps));
@@ -35,11 +37,11 @@ export default function EventCard(props: EventCardProps) {
 
     return <Card
         className={props.className}
-        url={`/events/${props.eventRole.event.id}/${props.eventRole["Volunteer_Event_Role_Details.Role"]}`}
-        thumbnail={props.eventRole.event["thumbnail.uri"]}
-        cancelled={props.eventRole.event["status_id:name"] == EventStatus.Cancelled}
+        url={`/events/${props.event.id}/${props.roleName}`}
+        thumbnail={props.event["thumbnail.uri"]}
+        cancelled={props.event["status_id:name"] == EventStatus.Cancelled}
     >
-        <h1 className="font-semibold mb-4">{props.eventRole.event.subject}</h1>
+        <h1 className="font-semibold mb-4">{props.event.subject}</h1>
         <div className="grid grid-rows-1 gap-y-2 text-black/70">
             {/* Date and Time */}
             <div className="flex items-center">
@@ -55,7 +57,7 @@ export default function EventCard(props: EventCardProps) {
             {/* Location */}
             <div className="gap-x-3 flex items-center">
                 <GrLocation className="text-secondary" />
-                <span className="text-sm font-semibold">{props.eventRole.event.location}</span>
+                <span className="text-sm font-semibold">{props.event.location}</span>
             </div>
             <div className="flex gap-x-3 items-center">
                 <RiCalendarScheduleLine className="text-secondary" />
@@ -66,7 +68,7 @@ export default function EventCard(props: EventCardProps) {
             {/* Role */}
             <div className="gap-x-3 flex items-center">
                 <IoBriefcaseOutline className="text-secondary" />
-                <span className="text-sm font-semibold">{props.eventRole["Volunteer_Event_Role_Details.Role:label"]}</span>
+                <span className="text-sm font-semibold">{props.roleName}</span>
             </div>
         </div>
     </Card>
