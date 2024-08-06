@@ -18,6 +18,7 @@ const ContactManager = new class ContactManager {
             ],
             where: [["email_primary.email", "=", email]]
         })!;
+
         return new Contact(response!.data[0]);
     }
 
