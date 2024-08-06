@@ -23,8 +23,8 @@ export default function Event() {
             const event = await EventDetailManager.fetch(eventId!);
             const schedules = await event.fetchSchedules({ roleId });
             setFields(await event.getOptionalCustomFields());
-            setSechedules(schedules);
             setEvent(event);
+            setSechedules(schedules);
         })();
     }, []);
     return <Wrapper>
@@ -68,16 +68,16 @@ export default function Event() {
                     {/* 1 Schedule */}
                     {schedules?.length == 1 && <>
                         <div className="bg-primary/30 text-secondary rounded-md py-2 px-3 col-span-4 lg:col-span-2">
-                        <h3 className="text-sm font-semibold mb-2">Date & Time</h3>
-                        <div className="flex flex-row items-center gap-x-3 font-bold text-sm">
-                            <FiCalendar size={22} />
-                            <div className="flex flex-col sm:flex-row gap-x-3">
-                                <span>{moment(schedules[0].activity_date_time).format("D MMM YYYY, h:mm A")}</span>
-                                <span className="hidden sm:block">-</span>
-                                <span>{moment(new Date(schedules[0].activity_date_time!).getTime() + (schedules[0].duration! * 60 * 1000)).format("D MMM YYYY, h:mm A")}</span>
+                            <h3 className="text-sm font-semibold mb-2">Date & Time</h3>
+                            <div className="flex flex-row items-center gap-x-3 font-bold text-sm">
+                                <FiCalendar size={22} />
+                                <div className="flex flex-col sm:flex-row gap-x-3">
+                                    <span>{moment(schedules[0].activity_date_time).format("D MMM YYYY, h:mm A")}</span>
+                                    <span className="hidden sm:block">-</span>
+                                    <span>{moment(new Date(schedules[0].activity_date_time!).getTime() + (schedules[0].duration! * 60 * 1000)).format("D MMM YYYY, h:mm A")}</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
                     </>}
                     {/* Role */}
                     <div className="bg-primary/30 text-secondary rounded-md py-2 px-3 col-span-4 lg:col-span-2">
@@ -88,6 +88,7 @@ export default function Event() {
                         </div>
                     </div>
                 </div>
+
                 {/* Optional Fields */}
                 <div className="mt-6">
                     {Object.keys(fields!).map(key => <div className="mb-6">
@@ -95,7 +96,37 @@ export default function Event() {
                         <p className="text-black/70">{fields![key]}</p>
                     </div>)}
                 </div>
+
+                {/* Schedules */}
+                <h3 className="text-xl text-black font-semibold">Schedule</h3>
+                {schedules?.map(schedule => <ScheduleDisplay schedule={schedule} />)}
             </div>
         </div>}
     </Wrapper>
+}
+
+interface ScheduleDisplayProps {
+    schedule: EventRole;
+}
+function ScheduleDisplay(props: ScheduleDisplayProps) {
+    const activityDate = new Date(props.schedule.activity_date_time!);
+    const activityTimestamp = activityDate.getTime();
+
+    const startDate = new Date(activityDate)
+    startDate.setHours(0, 0, 0, 0);
+    startDate.setTime(activityTimestamp - (props.schedule["Volunteer_Event_Role_Details.Registration_Start_Days_Before"]! * 8.64e+7))
+
+    const endDate = new Date(activityDate);
+    endDate.setHours(0, 0, 0, 0);
+    endDate.setTime(activityTimestamp - (props.schedule["Volunteer_Event_Role_Details.Registration_End_Days_Before"]! * 8.64e+7));
+
+    return <div>
+        <p>ID: {props.schedule.id}</p>
+        <p>Schedule Date: {moment(props.schedule.activity_date_time).format("DD MMM YYYY hh:mm a")}</p>
+        <p>Duration: {props.schedule.duration} minutes</p>
+        <p>Registration_Start_Date: {moment(startDate).format("DD MMM YYYY hh:mm a")} {`(${props.schedule["Volunteer_Event_Role_Details.Registration_Start_Days_Before"]} days before)`}</p>
+        <p>Registration_End_Date: {moment(endDate).format("DD MMM YYYY hh:mm a")} {`(${props.schedule["Volunteer_Event_Role_Details.Registration_End_Days_Before"]} days before)`}</p>
+        <p>Vacancy: {props.schedule["Volunteer_Event_Role_Details.Vacancy"]}</p>
+        <br />
+    </div>
 }

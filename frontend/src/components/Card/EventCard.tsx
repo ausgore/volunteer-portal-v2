@@ -37,7 +37,7 @@ export default function EventCard(props: EventCardProps) {
 
     return <Card
         className={props.className}
-        url={`/events/${props.event.id}/${props.roleName}`}
+        url={`/events/${props.event.id}/${props.roleId}`}
         thumbnail={props.event["thumbnail.uri"]}
         cancelled={props.event["status_id:name"] == EventStatus.Cancelled}
     >

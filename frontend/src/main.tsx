@@ -5,11 +5,11 @@ import "./main.css";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import Events from "./pages/Events";
-import EventOld from "./pages/archived_ignore/Event_Old";
+import EventOld from "./pages/archived/Event_Old";
 import Trainings from "./pages/Trainings";
 import Training from "./pages/Training";
 import Event from "./pages/Event";
-import EventsOld from "./pages/archived_ignore/Events_Old";
+import EventsOld from "./pages/archived/Events_Old";
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
 	<React.StrictMode>
