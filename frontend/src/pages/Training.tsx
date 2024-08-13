@@ -104,7 +104,7 @@ export default function TrainingPage() {
                     const Registration_Start_Date = schedule["Volunteer_Training_Schedule_Details.Registration_Start_Date"] ?? 'N/A';
                     const Registration_End_Date = schedule["Volunteer_Training_Schedule_Details.Registration_End_Date"] ?? 'N/A';
                     const Expiration_Date = schedule["Volunteer_Training_Schedule_Details.Expiration_Date"] ?? 'N/A';
-                    const Location = schedule.training.location ?? 'N/A';
+                    const Location = schedule.location ?? 'N/A';
                     const currentDate = moment();
                     const isRegistrationOpen = Registration_Start_Date !== 'N/A' && Registration_End_Date !== 'N/A' && currentDate.isBetween(moment(Registration_Start_Date), moment(Registration_End_Date)) && Vacancy !== 'N/A' && (Vacancy - NumRegistrations) > 0;
 

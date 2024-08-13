@@ -57,6 +57,7 @@ export class Training implements TrainingProps {
                 'activity_date_time',
                 'status_id:name',
                 'subject',
+                'location',
 
                 'Volunteer_Training_Schedule_Details.Vacancy',
                 'Volunteer_Training_Schedule_Details.Registration_Start_Date',
@@ -66,8 +67,7 @@ export class Training implements TrainingProps {
                 'training.id',
                 'training.subject',
                 'training.status_id:name',
-                'training.location',  
-                'training.duration'  
+                'training.duration'
             ],
             where: [
                 ['activity_type_id:name', '=', 'Volunteer Training Schedule'],
@@ -75,6 +75,9 @@ export class Training implements TrainingProps {
             ],
             join: [
                 ['Activity AS training', 'LEFT', ['training.id', '=', 'Volunteer_Training_Schedule_Details.Training']],
+            ],
+            order: [
+                ['activity_date_time', 'ASC']
             ],
             chain: {
                 'registrations': ['Activity', 'get', {

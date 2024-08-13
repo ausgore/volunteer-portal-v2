@@ -22,6 +22,7 @@ export interface TrainingScheduleProps extends MandatoryCustomTrainingSchedulePr
     activity_date_time: string | null;
     "status_id:name": TrainingScheduleStatus | null;
     subject: string | null;
+    location: string | null;
     [key: string]: any;
 }
 
@@ -30,6 +31,7 @@ export class TrainingSchedule implements TrainingScheduleProps {
     public activity_date_time: string | null = null;
     public "status_id:name": TrainingScheduleStatus | null = null;
     public subject: string | null = null;
+    public location: string | null = null;
 
     public 'Volunteer_Training_Schedule_Details.Vacancy': number | null;
     public 'Volunteer_Training_Schedule_Details.Registration_Start_Date': string | null;
@@ -47,6 +49,7 @@ export class TrainingSchedule implements TrainingScheduleProps {
         this.activity_date_time = props.activity_date_time;
         this["status_id:name"] = props["status_id:name"];
         this.subject = props.subject;
+        this.location = props.location;
 
         const trainingDetails: Partial<TrainingProps> = {};
         for (const key in props) {
